@@ -1,9 +1,16 @@
 import json
+
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 
 from apps.logger.models.logs import AuditLog
 from apps.logger.utils.auditlog import get_client_ip
+
+if settings.AUDIT_LOG_EXCLUDE_URLS:
+    EXCLUDE_URLS = [url for url in settings.AUDIT_LOG_EXCLUDE_URLS if url]
+else:
+    EXCLUDE_URLS = []
 
 
 class AuditLogMiddleware:
@@ -11,6 +18,9 @@ class AuditLogMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        if any(request.path.startswith(url) for url in EXCLUDE_URLS):
+            return self.get_response(request)
+
         request_data = self._parse_request_data(request)
         old_data = self._get_old_data(request) if request.method in ["PUT", "PATCH"] else None
 
