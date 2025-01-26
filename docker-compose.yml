@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  web:
+    restart: always
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: deployments/compose/django/Dockerfile
+    command: /start
+    volumes:
+      - .:/app
+    ports:
+      - ${PORT:-8001}:8000
+    depends_on:
+      - db
+#      - rabbitmq
+#      - redis
+
+  db:
+    image: postgres:15-alpine
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+
+#  redis:
+#    image: redis:latest
+#    restart: always
+
+
+#  rabbitmq:
+#    image: rabbitmq:management
+#    env_file:
+#      - .env
+#    restart: always
+#    environment:
+#      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+#      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+#    ports:
+#      - ${RABBITMQ_PORT:-15672}:15672
+#      - ${AMQP_PORT:-5672}:5672
+#    volumes:
+#      - rabbitmq:/var/lib/rabbitmq
+
+
+
+#  celery_worker:
+#    build:
+#      context: .
+#      dockerfile: ./deployments/compose/django/Dockerfile
+#    command: /start-celeryworker
+#    restart: always
+#    volumes:
+#      - .:/app
+#    env_file:
+#      - .env
+#    depends_on:
+#      - redis
+#      - rabbitmq
+#      - db
+
+
+#  celery_beat:
+#    build:
+#      context: .
+#      dockerfile: ./deployments/compose/django/Dockerfile
+#    command: /start-celerybeat
+#    restart: always
+#    volumes:
+#      - .:/app
+#    env_file:
+#      - .env
+#    depends_on:
+#      - redis
+#      - rabbitmq
+#      - db
+
+
+#  flower:
+#    env_file:
+#      - .env
+#    build:
+#      context: .
+#      dockerfile: ./deployments/compose/django/Dockerfile
+#    command: /start-flower
+#    restart: always
+#    volumes:
+#      - .:/app
+#    ports:
+#      - ${CELERY_FLOWER:-5555}:5555
+#    depends_on:
+#      - redis
+#      - rabbitmq
+#      - db
+
+
+
+volumes:
+  pg_data:
+    driver: local
+#  rabbitmq:
+#    driver: local

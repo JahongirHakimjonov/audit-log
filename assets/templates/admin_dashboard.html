@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Audit Dashboard</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Audit Log Dashboard</h1>
+        </header>
+        <section class="filters">
+            <form method="get" class="filter-form">
+                <input type="text" name="user" placeholder="Filter by User" value="{{ request.GET.user }}">
+                <input type="text" name="action" placeholder="Filter by Action" value="{{ request.GET.action }}">
+                <input type="date" name="start_date" placeholder="Start Date" value="{{ request.GET.start_date }}">
+                <input type="date" name="end_date" placeholder="End Date" value="{{ request.GET.end_date }}">
+                <button type="submit">Filter</button>
+            </form>
+        </section>
+        <section class="audit-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Model Name</th>
+                        <th>Object ID</th>
+                        <th>IP Address</th>
+                        <th>User Agent</th>
+                        <th>Timestamp</th>
+                        <th>Request Data</th>
+                        <th>Response Data</th>
+                        <th>Errors</th>
+                        <th>Old Data</th>
+                        <th>New Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in page_obj.object_list %}
+                        <tr>
+                            <td>{{ log.user }}</td>
+                            <td>{{ log.get_action_display }}</td>
+                            <td>{{ log.model_name }}</td>
+                            <td>{{ log.object_id }}</td>
+                            <td>{{ log.ip_address }}</td>
+                            <td>{{ log.user_agent }}</td>
+                            <td>{{ log.timestamp }}</td>
+                            <td>
+                                <details>
+                                    <summary>View</summary>
+                                    <pre>{{ log.request_data|safe }}</pre>
+                                </details>
+                            </td>
+                            <td>
+                                <details>
+                                    <summary>View</summary>
+                                    <pre>{{ log.response_data|safe }}</pre>
+                                </details>
+                            </td>
+                            <td>
+                                <details>
+                                    <summary>View</summary>
+                                    <pre>{{ log.errors|safe }}</pre>
+                                </details>
+                            </td>
+                            <td>
+                                <details>
+                                    <summary>View</summary>
+                                    <pre>{{ log.old_data|safe }}</pre>
+                                </details>
+                            </td>
+                            <td>
+                                <details>
+                                    <summary>View</summary>
+                                    <pre>{{ log.new_data|safe }}</pre>
+                                </details>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}">&laquo; Previous</a>
+                {% endif %}
+                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">Next &raquo;</a>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</body>
+</html>
