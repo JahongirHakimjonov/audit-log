@@ -122,4 +122,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-AUDIT_LOG_EXCLUDE_URLS = ["/admin/", "/ru/", "/en/", "/uz/"]
+AUDIT_LOG_EXCLUDE_URLS = ["/bfbgb/"]

@@ -13,11 +13,11 @@ class PrettyJSONEncoder(JSONEncoder):
 
 class AuditLog(AbstractBaseModel):
     ACTION_CHOICES = [
-        ("CREATE", "Create"),
-        ("UPDATE", "Update"),
+        ("POST", "Create"),
+        ("PATCH", "Update Partial"),
+        ("PUT", "Update Full"),
         ("DELETE", "Delete"),
-        ("LOGIN", "Login"),
-        ("LOGOUT", "Logout"),
+        ("FAILED_AUTHENTICATION", "Failed Authentication"),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -33,6 +33,12 @@ class AuditLog(AbstractBaseModel):
     errors = models.JSONField(null=True, blank=True, encoder=PrettyJSONEncoder)
     old_data = models.JSONField(null=True, blank=True, encoder=PrettyJSONEncoder)
     new_data = models.JSONField(null=True, blank=True, encoder=PrettyJSONEncoder)
+    changed_fields = models.JSONField(null=True, blank=True, encoder=PrettyJSONEncoder)
+    headers = models.JSONField(null=True, blank=True, encoder=PrettyJSONEncoder)
+    start_time = models.CharField(max_length=50, null=True, blank=True)
+    end_time = models.CharField(max_length=50, null=True, blank=True)
+    execution_time = models.CharField(max_length=50, null=True, blank=True)
+    log_entry = models.TextField(null=True, blank=True)
 
     class Meta:
         indexes = [
